@@ -1207,12 +1207,15 @@ static NSOperationQueue *sharedQueue = nil;
 
     if([[[[self url] scheme] lowercaseString] isEqualToString:@"https"]) {
         
-        // see: https://github.com/ignaval/asi-http-request/commit/c782abbeb204156d30ecbb902915d1eaf9b10f9e
-        NSMutableDictionary *sslProperties = [NSMutableDictionary dictionaryWithCapacity:1];
-        [sslProperties setValue:@"kCFStreamSocketSecurityLevelTLSv1_0SSLv3" forKey:kCFStreamSSLLevel];
-        CFReadStreamSetProperty((CFReadStreamRef)[self readStream],
-                                kCFStreamPropertySSLSettings,
-                                (CFTypeRef)sslProperties);
+        float sysVer = [[[UIDevice currentDevice] systemVersion] floatValue];
+        if ( sysVer < 5.1f ) {
+            // see: https://github.com/ignaval/asi-http-request/commit/c782abbeb204156d30ecbb902915d1eaf9b10f9e
+            NSMutableDictionary *sslProperties = [NSMutableDictionary dictionaryWithCapacity:1];
+            [sslProperties setValue:@"kCFStreamSocketSecurityLevelTLSv1_0SSLv3" forKey:kCFStreamSSLLevel];
+            CFReadStreamSetProperty((CFReadStreamRef)[self readStream],
+                                    kCFStreamPropertySSLSettings,
+                                    (CFTypeRef)sslProperties);
+        }
 
         //
         // Tell CFNetwork not to validate SSL certificates
